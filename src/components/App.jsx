@@ -30,12 +30,15 @@ export class App extends Component {
             this.setState({isLoading: true})
             getByName(query, page)
               .then(images => {
-                images.length === 0 && toast.info("Please, enter anything else to search")
-                if (images.length >= 12) {
-                  this.handleForButton()
+                images.data.hits.length === 0 && toast.info("Please, enter anything else to search")
+                if (images.data.hits.length >= 12) {
+                  this.setState({showButton: true})
                 } else
-                this.setState({showButton: false})
-                this.setState({ images: [...prevState.images, ...images], isLoading: false })
+                  this.setState({ showButton: false })
+                if (prevState.query !== query) {
+                  this.setState({images: [...images.data.hits], isLoading: false})
+                } else
+                this.setState({ images: [...prevState.images, ...images.data.hits], isLoading: false })
               })
               .catch(error => { this.setState({ error: toast.error('Something wrong, reload the page') }) })
             }
@@ -52,10 +55,6 @@ export class App extends Component {
     
     closeModal = () => {
         this.setState({selectedImg: null})
-    }
-  
-  handleForButton = () => {
-    this.setState({showButton: true})
     }
 
   render() {
